@@ -3,20 +3,22 @@ package com.clinton.yehuda.irisechat;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.firebase.auth.FirebaseAuth;
-
-import bolts.Task;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final int SIGN_IN_REQUEST_CODE = 6;///take this away//
+    public static final int SIGN_IN_REQUEST_CODE =1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +46,30 @@ public class MainActivity extends AppCompatActivity {
             // Load chat room contents
             displayChatMessages();
         }
+
+        FloatingActionButton fab =
+                (FloatingActionButton)findViewById(R.id.fab);
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                EditText input = (EditText)findViewById(R.id.input);
+
+                // Read the input field and push a new instance
+                // of ChatMessage to the Firebase database
+                FirebaseDatabase.getInstance()
+                        .getReference()
+                        .push()
+                        .setValue(new ChatMessage(input.getText().toString(),
+                                FirebaseAuth.getInstance()
+                                        .getCurrentUser()
+                                        .getDisplayName())
+                        );
+
+                // Clear the input
+                input.setText("");
+            }
+        });
     }
 
     private void displayChatMessages() {
@@ -83,12 +109,7 @@ public class MainActivity extends AppCompatActivity {
         if(item.getItemId() == R.id.menu_sign_out) {
             AuthUI.getInstance().signOut(this)
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
                         public void onComplete(@NonNull com.google.android.gms.tasks.Task<Void> task) {
-
-                        }
-                        
-                        public void onComplete(@NonNull Task<Void> task) {
                             Toast.makeText(MainActivity.this,
                                     "You have been signed out.",
                                     Toast.LENGTH_LONG)
