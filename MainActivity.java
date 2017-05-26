@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.firebase.auth.FirebaseAuth;
 
 import bolts.Task;
@@ -83,6 +84,10 @@ public class MainActivity extends AppCompatActivity {
             AuthUI.getInstance().signOut(this)
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
+                        public void onComplete(@NonNull com.google.android.gms.tasks.Task<Void> task) {
+
+                        }
+                        
                         public void onComplete(@NonNull Task<Void> task) {
                             Toast.makeText(MainActivity.this,
                                     "You have been signed out.",
