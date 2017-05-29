@@ -20,10 +20,13 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.Date;
+
 public class MainActivity extends AppCompatActivity {
 
     public static final int SIGN_IN_REQUEST_CODE =1;
     private FirebaseListAdapter<ChatMessage> adapter;
+ //////////////
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,8 +97,17 @@ public class MainActivity extends AppCompatActivity {
                 messageUser.setText(model.getMessageUser());
 
                 // Format the date before showing it
-                messageTime.setText(DateFormat.format("dd-MM-yyyy (HH:mm:ss)",
-                        model.getMessageTime()));
+
+
+                //lets play with the time
+                long now = new Date().getTime();
+                if(model.getMessageTime() - now >= 86400){//if it was more than day ago
+                    messageTime.setText(DateFormat.format("dd-MM", model.getMessageTime()));
+                }else{
+                    messageTime.setText(DateFormat.format("HH:mm", model.getMessageTime()));
+                }
+                //original
+//                messageTime.setText(DateFormat.format("dd-MM-yyyy (HH:mm:ss)", model.getMessageTime()));
             }
         };
 
