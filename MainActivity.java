@@ -6,10 +6,12 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.text.format.DateFormat;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
 
     public static final int SIGN_IN_REQUEST_CODE =1;
     private FirebaseListAdapter<ChatMessage> adapter;
+    private static String currentUser;
  //////////////
 
     @Override
@@ -50,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
                             .getDisplayName(),
                     Toast.LENGTH_LONG)
                     .show();
+            currentUser = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
 
             // Load chat room contents
             displayChatMessages();
@@ -88,25 +92,27 @@ public class MainActivity extends AppCompatActivity {
             protected void populateView(View v, ChatMessage model, int position) {
                 // Get references to the views of message.xml
                 TextView messageText = (TextView)v.findViewById(R.id.message_text);
-                TextView messageUser = (TextView)v.findViewById(R.id.message_user);
-                TextView messageTime = (TextView)v.findViewById(R.id.message_time);
-
-                // Set their text
-                messageText.setText(model.getMessageText());
-                messageUser.setText(model.getMessageUser());
+                LinearLayout messageLayout = (LinearLayout)v.findViewById(R.id.message_layout);
 
                 // Format the date before showing it
-
-
-                //lets play with the time
+                // create the correct time format
                 long now = new Date().getTime();
                 if(model.getMessageTime() - now >= 86400){//if it was more than day ago
-                    messageTime.setText(DateFormat.format("dd-MM", model.getMessageTime()));
+                    messageText.setText(model.getMessageUser()+" "+DateFormat.format("dd-MM", model.getMessageTime()));
                 }else{
-                    messageTime.setText(DateFormat.format("HH:mm", model.getMessageTime()));
+                    messageText.setText(model.getMessageUser()+" "+DateFormat.format("HH:mm", model.getMessageTime()));
                 }
-                //original
-//                messageTime.setText(DateFormat.format("dd-MM-yyyy (HH:mm:ss)", model.getMessageTime()));
+
+                // Add the message text
+                messageText.setText(messageText.getText()+"\n"+model.getMessageText());
+
+                // Set right or left orientation
+                if(model.getMessageUser().equals(currentUser)){
+                    messageLayout.setGravity(Gravity.LEFT);
+                }else{
+                    messageLayout.setGravity(Gravity.RIGHT);
+                }
+
             }
         };
 
