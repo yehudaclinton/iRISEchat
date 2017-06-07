@@ -26,17 +26,16 @@ import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static final int SIGN_IN_REQUEST_CODE =1;
+    public static final int SIGN_IN_REQUEST_CODE = 1;
     private FirebaseListAdapter<ChatMessage> adapter;
     private static String currentUser;
- //////////////
+    //////////////
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        if(FirebaseAuth.getInstance().getCurrentUser() == null) {
+        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
             // Start sign in/sign up activity
             startActivityForResult(
                     AuthUI.getInstance()
@@ -54,17 +53,16 @@ public class MainActivity extends AppCompatActivity {
                     Toast.LENGTH_LONG)
                     .show();
             currentUser = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
-
             // Load chat room contents
             displayChatMessages();
         }
 
-        FloatingActionButton fab = (FloatingActionButton)findViewById(R.id.fab);
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                EditText input = (EditText)findViewById(R.id.input);
+                EditText input = (EditText) findViewById(R.id.input);
 
                 // Read the input field and push a new instance
                 // of ChatMessage to the Firebase database
@@ -84,33 +82,30 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void displayChatMessages() {
-        ListView listOfMessages = (ListView)findViewById(R.id.list_of_messages);
+        ListView listOfMessages = (ListView) findViewById(R.id.list_of_messages);
 
         adapter = new FirebaseListAdapter<ChatMessage>(this, ChatMessage.class,
                 R.layout.message, FirebaseDatabase.getInstance().getReference()) {
             @Override
             protected void populateView(View v, ChatMessage model, int position) {
                 // Get references to the views of message.xml
-                TextView messageText = (TextView)v.findViewById(R.id.message_text);
-                LinearLayout messageLayout = (LinearLayout)v.findViewById(R.id.message_layout);
+                TextView messageText = (TextView) v.findViewById(R.id.message_text);
+                LinearLayout messageLayout = (LinearLayout) v.findViewById(R.id.message_layout);
+                long now = new Date().getTime();
 
                 // Format the date before showing it
-                // create the correct time format
-                long now = new Date().getTime();
-                if(model.getMessageTime() - now >= 86400){//if it was more than day ago
-                    messageText.setText(model.getMessageUser()+" "+DateFormat.format("dd-MM", model.getMessageTime()));
-                }else{
-                    messageText.setText(model.getMessageUser()+" "+DateFormat.format("HH:mm", model.getMessageTime()));
+                if (model.getMessageTime() - now >= 86400) {//if it was more than day ago
+                    messageText.setText(model.getMessageUser() + " " + DateFormat.format("dd-MM", model.getMessageTime()));
+                } else {
+                    messageText.setText(model.getMessageUser() + " " + DateFormat.format("HH:mm", model.getMessageTime()));
                 }
 
                 // Add the message text
-                messageText.setText(messageText.getText()+"\n"+model.getMessageText());
+                messageText.setText(messageText.getText() + "\n" + model.getMessageText());
 
-                // Set right or left orientation
-                if(model.getMessageUser().equals(currentUser)){
-                    messageLayout.setGravity(Gravity.LEFT);
-                }else{
+                if (!model.getMessageUser().equals(currentUser)) {
                     messageLayout.setGravity(Gravity.RIGHT);
+                    messageText.setBackgroundResource(R.drawable.rounded_right);
                 }
 
             }
@@ -118,13 +113,14 @@ public class MainActivity extends AppCompatActivity {
 
         listOfMessages.setAdapter(adapter);
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode,
                                     Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == SIGN_IN_REQUEST_CODE) {
-            if(resultCode == RESULT_OK) {
+        if (requestCode == SIGN_IN_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
                 Toast.makeText(this,
                         "Successfully signed in. Welcome!",
                         Toast.LENGTH_LONG)
@@ -132,9 +128,7 @@ public class MainActivity extends AppCompatActivity {
                 displayChatMessages();
             } else {
                 Toast.makeText(this,
-                        "We couldn't sign you in. Please try again later.",
-                        Toast.LENGTH_LONG)
-                        .show();
+                        "We couldn't sign you in. Please try again later.", Toast.LENGTH_LONG).show();
 
                 // Close the app
                 finish();
@@ -142,14 +136,16 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
         return true;
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == R.id.menu_sign_out) {
+        if (item.getItemId() == R.id.menu_sign_out) {
             AuthUI.getInstance().signOut(this)
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         public void onComplete(@NonNull com.google.android.gms.tasks.Task<Void> task) {
