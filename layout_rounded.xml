@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle" android:padding="10dp">
+    <solid android:color="@color/colorBlueAccent"/>
+    <corners
+        android:bottomRightRadius="15dp"
+        android:bottomLeftRadius="15dp"
+
+        android:topRightRadius="15dp"/>
+
+</shape>
+
+<!--android:topLeftRadius="20dp"-->
+
+    <!--i need to make a thing which has a opposite layout for different user-->
