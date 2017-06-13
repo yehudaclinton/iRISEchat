@@ -11,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -145,6 +146,8 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        ImageView anImage = (ImageView) findViewById(R.id.pic);
+
         if (item.getItemId() == R.id.menu_sign_out) {
             AuthUI.getInstance().signOut(this)
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -158,6 +161,8 @@ public class MainActivity extends AppCompatActivity {
                             finish();
                         }
                     });
+        }else if(item.getItemId() == R.id.add_picture){
+anImage.setVisibility(View.VISIBLE);
         }
         return true;
     }
